@@ -10,8 +10,8 @@ var world;
 Game = {
   // This defines our grid's size and the size of each of its tiles
   map_grid: {
-    width:  12,
-    height: 12,
+    width:  16,
+    height: 16,
     tile: {
       width:  32,
       height: 32
@@ -53,8 +53,6 @@ Game = {
     for (var x = 0; x < Game.map_grid.width; x++) {
       for (var y = 0; y < Game.map_grid.height; y++) {
         var at_edge = x == 0 || x == Game.map_grid.width - 1 || y == 0 || y == Game.map_grid.height - 1;
-
-
         if (at_edge) {
           // Place a tree entity at the current tile
           Crafty.e('Tree').at(x, y);
@@ -63,6 +61,10 @@ Game = {
           // Place a bush entity at the current tile
           Crafty.e('Bush').at(x, y);
           world[x][y] = 2;
+        } else if (Math.random() < 0.06 && world[x][y] == 0) {
+          // Place a bush entity at the current tile
+          Crafty.e('Chest').at(x, y);
+          world[x][y] = -1;
         }
       }
     }

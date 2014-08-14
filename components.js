@@ -37,6 +37,16 @@ Crafty.c('Tree', {
       .color('rgb(20, 125, 40)');
   },
 });
+Crafty.c('Chest', {
+  init: function() {
+    this.requires('Actor, Color, Solid')
+      .color('rgb(0, 125, 240)');
+  },
+  collect: function() {
+    console.log("BOTIN!");
+    this.destroy();
+  }
+});
 
 Crafty.c('MouseTracker', {
   init: function() {
@@ -71,7 +81,12 @@ Crafty.c('Girl', {
   init: function() {
     this.requires('Actor, Fourway, girl01, Tween, Collision')
       .fourway(4)
+      .onHit('Chest', this.catchTreasure)
       .stopOnSolids();
+  },
+  catchTreasure: function (data) {
+    chest = data[0].obj;
+    chest.collect();
   },
   doTheWalk: function() {
     if (this.path.length == 0) {
