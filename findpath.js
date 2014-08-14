@@ -1,3 +1,4 @@
+// http://buildnewgames.com/astar/
 function findPath(world, pathStart, pathEnd)
 {
 	// shortcuts for speed
