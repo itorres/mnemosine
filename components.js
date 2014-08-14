@@ -37,13 +37,54 @@ Crafty.c('Tree', {
       .color('rgb(20, 125, 40)');
   },
 });
+
+Crafty.c('Formula', {
+  init: function () {
+    this.requires('2D, Color, DOM, Grid, Text')
+      .textFont({ family: 'Ubuntu Mono', lineHeight: '32px', size: '28px' })
+      .css({"textAlign": "center", "verticalAlign": "middle"});
+    this.attr({
+      w: Game.map_grid.tile.width,
+      h: Game.map_grid.tile.height
+    })
+  }
+});
+Crafty.c('StatusText', {
+  init: function () {
+    this.requires('Formula');
+    this.attr({
+      w: Game.map_grid.tile.width*Game.map_grid.width,
+      h: Game.map_grid.tile.height
+    });
+    this.bind('MouseDown', this._mouse_down);
+  },
+  _mouse_down: function() {
+    console.log("Restart");
+     Crafty.scene('Game');
+  }
+
+});
+
 Crafty.c('Chest', {
+  treasure: false,
+  index: -1,
   init: function() {
-    this.requires('Actor, Color, Solid')
-      .color('rgb(0, 125, 240)');
+    this.requires('Formula, Solid')
+      .textFont({ size: '14px' })
+      .color('rgb(100, 125, 140)')
+      .css({"textAlign": "center", "verticalAlign": "middle"});
   },
   collect: function() {
-    console.log("BOTIN!");
+    if (this.treasure) {
+      console.log("BOTIN!", this.treasure);
+  		Crafty.trigger('VillageVisited', this);
+      Crafty('StatusText').text('¡Muy bien!');
+    } else {
+      Crafty('StatusText').text("Eso no es correcto");
+      console.log("FALSE!");
+    }
+    var loc = this.at();
+    world[loc.x][loc.y] = 0; // empty the location
     this.destroy();
   }
 });
@@ -106,18 +147,27 @@ Crafty.c('Girl', {
       attr = {x: g[0]*Game.map_grid.tile.height}
       // animate
     }
-    console.log("Walking",attr);
+    console.log("Walking",g);
     this.tween(attr, 200);
     this.timeout(this.doTheWalk, 220);
   },
   walkPath: function(path) {
     this.path = path;
+    console.log("walkPath",path);
     this.doTheWalk();
   },
   moveTo: function(x, y) {
-    var loc = this.at()
-    this.walkPath(findPath(world, [loc.x, loc.y], [x, y]));
+    var loc = this.at();
+    var keep;
+    if (world[x][y] <= 0) {
+      keep = world[x][y];
+      world[x][y] = -65000;
+    }
+    var path = findPath(world, [loc.x, loc.y], [x, y], -100);
+    world[x][y] = keep;
 
+    console.log("moveTo",x,y, world[x][y], path);
+    this.walkPath(path);
   },
   stopOnSolids: function() {
     this.onHit('Solid', this.stopMovement);

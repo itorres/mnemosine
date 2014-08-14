@@ -1,5 +1,5 @@
 // http://buildnewgames.com/astar/
-function findPath(world, pathStart, pathEnd)
+function findPath(world, pathStart, pathEnd, maxWalkableTileNum)
 {
 	// shortcuts for speed
 	var	abs = Math.abs;
@@ -11,7 +11,8 @@ function findPath(world, pathStart, pathEnd)
 	// anything higher than this number is considered blocked
 	// this is handy is you use numbered sprites, more than one
 	// of which is walkable road, grass, mud, etc
-	var maxWalkableTileNum = 0;
+	if (maxWalkableTileNum === undefined)
+		maxWalkableTileNum = 0;
 
 	// keep track of the world dimensions
     // Note that this A-star implementation expects the world array to be square: 
@@ -258,3 +259,8 @@ function findPath(world, pathStart, pathEnd)
 	return calculatePath();
 
 } // end of findPath() function
+
+function randomIntFromInterval(min,max)
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
+}

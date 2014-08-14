@@ -11367,6 +11367,7 @@ Crafty.c("Text", {
 
         if (this.has("Canvas") )
             this._resizeForCanvas();
+        console.log("Text", text, this._text);
 
         this.trigger("Invalidate");
         return this;
@@ -12174,6 +12175,8 @@ Crafty.extend({
             Crafty.stage.elem.appendChild(Crafty.stage.inner);
             Crafty.stage.inner.style.position = "absolute";
             Crafty.stage.inner.style.zIndex = "1";
+            Crafty.stage.inner.style.left = "0";
+            Crafty.stage.inner.style.top = "0";
             Crafty.stage.inner.style.transformStyle = "preserve-3d"; // Seems necessary for Firefox to preserve zIndexes?
 
             //css style
