@@ -1,3 +1,4 @@
+// Encoding: UTF-8
 Crafty.scene('Game', function() {
     Crafty.e("MouseTracker").at(0,0);
     
@@ -98,8 +99,4 @@ Crafty.scene('Game', function() {
     this.player = Crafty.e('Girl').at(1, 1);
     
 }, function() {
-	// Remove our event binding from above so that we don't
-	//  end up having multiple redundant event watchers after
-	//  multiple restarts of the game
-	// this.unbind('VillageVisited', this.show_victory);
 });
