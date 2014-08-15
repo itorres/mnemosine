@@ -7,6 +7,7 @@
 // http://jsfiddle.net/Gamedevtuts/nkZjR/
 */
 var world;
+var wins = 0;
 Game = {
   // This defines our grid's size and the size of each of its tiles
   map_grid: {

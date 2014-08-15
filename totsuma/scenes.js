@@ -6,7 +6,7 @@ Crafty.scene('Game', function() {
         var operands = [];
         var guesses = [];
         while (operands.length<2) {
-          var candidate = Crafty.math.randomInt(1,10);
+          var candidate = Crafty.math.randomInt(1,10+wins);
           if (operands.length == 0 || candidate != operands[0])
             operands.push(candidate);
         }
@@ -114,6 +114,6 @@ Crafty.scene('Game', function() {
 
     this.player = Crafty.e('Girl').at(1, 1);
     Crafty.viewport.follow(this.player,0,0);
-    Crafty.viewport.scale(1.5);
+   // Crafty.viewport.scale(1.5);
 }, function() {
 });

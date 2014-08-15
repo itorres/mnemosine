@@ -76,7 +76,7 @@ Crafty.c('Chest', {
   index: -1,
   init: function() {
     this.requires('Formula, Solid')
-      .textFont({ size: '14px' })
+      .textFont({ size: '18px' })
       .color('rgb(100, 125, 140)')
       .css({"textAlign": "center", "verticalAlign": "middle"});
   },
@@ -86,6 +86,7 @@ Crafty.c('Chest', {
     this.destroy();
 
     if (this.treasure) {
+      wins++;
       return true;
 
       console.log("BOTIN!", this.treasure, who);
@@ -215,6 +216,13 @@ Crafty.c('Girl', {
     this.doTheWalk();
   },
   moveTo: function(x, y) {
+    if (this.at === undefined) {
+      console.log('this at reset');
+      // Ugly fix for "Uncaught TypeError: undefined is not a function"
+      Crafty.scene('Game');
+    }
+    console.log('Checking value of this', this);
+    
     var loc = this.at();
     var keep;
     if (world[x][y] <= 0) {
