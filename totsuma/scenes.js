@@ -13,8 +13,10 @@ Crafty.scene('Game', function() {
           }
         }
         
+        /*
         Crafty.e('StatusText').at(0,Game.map_grid.height-1)
             .text('¡Hola!');
+        */
         Crafty.e('Question').at(0,0)
             .text('Resuelve ' + operands.join(' + '));
         //patata.w = Game.map_grid.tile.width * Game.map_grid.width;
