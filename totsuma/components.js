@@ -119,7 +119,7 @@ Crafty.c('Bush', {
 });
 
 
-Crafty.sprite(32,32, "art/chars.png",{
+Crafty.sprite(32,32, "../art/chars.png",{
   girl01: [0,0], girl02: [0,1], girl03: [0,2],
   girl04: [1,0], girl05: [1,1], girl06: [1,2],
   girl07: [2,0], girl08: [2,1], girl09: [2,2],
