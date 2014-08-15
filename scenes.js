@@ -15,8 +15,10 @@ Crafty.scene('Game', function() {
         
         Crafty.e('StatusText').at(0,Game.map_grid.height-1)
             .text('¡Hola!');
+        Crafty.e('Question').at(0,0)
+            .text('Resuelve ' + operands.join(' + '));
         //patata.w = Game.map_grid.tile.width * Game.map_grid.width;
-        
+        /*
         var left = String(operands[0]);
         var center = Math.floor(Game.map_grid.width/2);
         var right = String(operands[1]);
@@ -34,6 +36,7 @@ Crafty.scene('Game', function() {
           console.log("Escrivint",right[i],"en",x);
           Crafty.e('Formula').at(x,0).text(right[i]);
         }
+        */
         var result = operands[0]+operands[1];
         while (guesses.length<6) {
           var candidate = result - Math.round(Math.random()*10);
@@ -55,7 +58,10 @@ Crafty.scene('Game', function() {
     world[1][1] = 1;
     
     var sums = setupSum();
-
+    function placeBush(x,y) {
+      Crafty.e('Bush').at(x, y);
+      world[x][y] = 2;
+    }
 
     // Place a tree at every edge square on our grid of 16x16 tiles
     for (var x = 0; x < Game.map_grid.width; x++) {
@@ -67,8 +73,7 @@ Crafty.scene('Game', function() {
           world[x][y] = 1;
         } else if (Math.random() < 0.06 && world[x][y] == -65535) {
           // Place a bush entity at the current tile
-          Crafty.e('Bush').at(x, y);
-          world[x][y] = 2;
+          placeBush(x,y);
         }
       }
     }
@@ -92,9 +97,20 @@ Crafty.scene('Game', function() {
         var treasure = Crafty.e('Chest').at(x, y).text(sums.result);
         treasure.treasure = true;
         world[x][y] = chest.index;
-        resultPlaced = true;
+        resultPlaced = [x,y];
       }
     }
+
+    // Check scenario
+    placeBush(1,2);
+    world[resultPlaced[0]][resultPlaced[1]] = -65000;
+    var path = findPath(world, [1,1], resultPlaced, -1000);
+    if (path.length == 0) {
+      // Unsolvable scenario, reshuffle
+      console.log('Unsolvable scenario, reshuffle', world, [1,1], resultPlaced, -1000, path);
+      Crafty.scene('Game');
+    }
+    world[resultPlaced[0]][resultPlaced[y]] = -1;
 
     this.player = Crafty.e('Girl').at(1, 1);
     
