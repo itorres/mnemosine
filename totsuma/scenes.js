@@ -79,8 +79,8 @@ Crafty.scene('Game', function() {
     }
     
     while (sums.guesses.length > 0) {
-      var x = randomIntFromInterval(0,Game.map_grid.width-1);
-      var y = randomIntFromInterval(0,Game.map_grid.height-1);
+      var x = Crafty.math.randomInt(0,Game.map_grid.width-1);
+      var y = Crafty.math.randomInt(0,Game.map_grid.height-1);
       // console.log("Candidate position",x,y,world[x][y])
       if (Math.random() < 0.06 && world[x][y] == -65535) {
         var text = sums.guesses.pop();
@@ -91,8 +91,8 @@ Crafty.scene('Game', function() {
     var resultPlaced = false;
     
     while (!resultPlaced) {
-      var x = randomIntFromInterval(0,Game.map_grid.width-1);
-      var y = randomIntFromInterval(0,Game.map_grid.height-1);
+      var x = Crafty.math.randomInt(0,Game.map_grid.width-1);
+      var y = Crafty.math.randomInt(0,Game.map_grid.height-1);
       if (world[x][y] == -65535) {
         var treasure = Crafty.e('Chest').at(x, y).text(sums.result);
         treasure.treasure = true;
