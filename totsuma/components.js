@@ -80,22 +80,26 @@ Crafty.c('Chest', {
       .css({"textAlign": "center", "verticalAlign": "middle"});
   },
   collect: function(who) {
+    var loc = this.at();
+    world[loc.x][loc.y] = 0; // empty the location
+    this.destroy();
+
     if (this.treasure) {
+      return true;
+
       console.log("BOTIN!", this.treasure, who);
   		Crafty.trigger('VillageVisited', this);
       Crafty('StatusText')
         .textColor('#ffffff')
         .text('¡Muy bien!');
     } else {
+      return false;
+
       Crafty('StatusText')
         .textColor('#000000')
         .text("Eso no es correcto");
       console.log("FALSE!");
     }
-    var loc = this.at();
-    world[loc.x][loc.y] = 0; // empty the location
-    this.destroy();
-    return(true);
   }
 });
 
@@ -135,6 +139,7 @@ Crafty.c('Anim', {
   init: function() {
     this.requires('SpriteAnimation, PlayerSprite')
       .reel('Visca',1000, [ [0, 0], [1, 0], [2, 0], [1, 0] ])
+      .reel('boo',  1000, [ [0, 3], [1, 3], [2, 3], [1, 3] ])
       .reel('s'    , 100, [ [0, 0], [2, 0] ])
       .reel('e'    , 100, [ [0, 2], [2, 2] ])
       .reel('w'    , 100, [ [0, 1], [2, 1] ])
@@ -157,16 +162,15 @@ Crafty.c('Girl', {
     if (chest.collect()) {
       this.animate('Visca', -1);
     } else {
-      console.log("Buu hoo!")
+      this.animate('boo',   2);
     }
   },
   doTheWalk: function() {
     if (this.path.length == 0) {
       // reset animation
       console.log("End of walk");
-      if (!this.isPlaying('Visca'))
+      if (!this.isPlaying())
         this.animate('rest', 2);
-
       return;
     }
     var g = this.path.shift();
@@ -174,8 +178,10 @@ Crafty.c('Girl', {
       g = this.path.shift(); // Ignore start position
 
       if (g === undefined) {
-        this.animate('rest', 1);
-
+        if (this.isPlaying('Visca'))
+          Crafty.scene('Game');
+        else
+          this.animate('rest', 1);
         // The player clicked over the player character.
         return;
       }
