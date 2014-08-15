@@ -6,11 +6,9 @@ Crafty.scene('Game', function() {
         var operands = [];
         var guesses = [];
         while (operands.length<2) {
-          var candidate = Math.round(Math.random()*10);
-          if (candidate > 1 && candidate < 10) {
-            if (operands.length == 0 || candidate != operands[0])
-              operands.push(candidate);
-          }
+          var candidate = Crafty.math.randomInt(1,10);
+          if (operands.length == 0 || candidate != operands[0])
+            operands.push(candidate);
         }
         
         /*
@@ -115,6 +113,7 @@ Crafty.scene('Game', function() {
     world[resultPlaced[0]][resultPlaced[y]] = -1;
 
     this.player = Crafty.e('Girl').at(1, 1);
-    
+    Crafty.viewport.follow(this.player,0,0);
+    Crafty.viewport.scale(1.5);
 }, function() {
 });
