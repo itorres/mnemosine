@@ -41,6 +41,7 @@ Crafty.c('Tree', {
 Crafty.c('Formula', {
   init: function () {
     this.requires('2D, Color, DOM, Grid, Text')
+      .unselectable()
       .textFont({ family: 'Ubuntu Mono', lineHeight: '32px', size: '28px' })
       .css({"textAlign": "center", "verticalAlign": "middle"});
     this.attr({
@@ -49,6 +50,7 @@ Crafty.c('Formula', {
     })
   }
 });
+
 Crafty.c('StatusText', {
   init: function () {
     this.requires('Formula');
@@ -56,13 +58,16 @@ Crafty.c('StatusText', {
       w: Game.map_grid.tile.width*Game.map_grid.width,
       h: Game.map_grid.tile.height
     });
-    this.bind('MouseDown', this._mouse_down);
-  },
-  _mouse_down: function() {
-    console.log("Restart");
-     Crafty.scene('Game');
   }
-
+});
+Crafty.c('Question', {
+  init: function () {
+    this.requires('Formula');
+    this.attr({
+      w: Game.map_grid.tile.width*Game.map_grid.width,
+      h: Game.map_grid.tile.height
+    });
+  }
 });
 
 Crafty.c('Chest', {
@@ -83,7 +88,7 @@ Crafty.c('Chest', {
         .text('¡Muy bien!');
     } else {
       Crafty('StatusText')
-        .textColor('#ff0000')
+        .textColor('#000000')
         .text("Eso no es correcto");
       console.log("FALSE!");
     }
@@ -141,8 +146,12 @@ Crafty.c('Girl', {
     var g = this.path.shift();
     if (this.at().x == g[0] && this.at().y == g[1]) {
       g = this.path.shift(); // Ignore start position
+
+      if (g === undefined) {
+        // The player clicked over the player character.
+        return;
+      }
     }
-      
     var attr;
     if (this.at().x == g[0]) {
       attr = {y: g[1]*Game.map_grid.tile.height}
@@ -167,7 +176,9 @@ Crafty.c('Girl', {
       keep = world[x][y];
       world[x][y] = -65000;
     }
-    var path = findPath(world, [loc.x, loc.y], [x, y], -100);
+    var path = findPath(world, [loc.x, loc.y], [x, y], -1000);
+    console.log('Solving', world, [loc.x, loc.y], [x, y], -1000, path);
+
     world[x][y] = keep;
 
     console.log("moveTo",x,y, world[x][y], path);
