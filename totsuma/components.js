@@ -79,9 +79,9 @@ Crafty.c('Chest', {
       .color('rgb(100, 125, 140)')
       .css({"textAlign": "center", "verticalAlign": "middle"});
   },
-  collect: function() {
+  collect: function(who) {
     if (this.treasure) {
-      console.log("BOTIN!", this.treasure);
+      console.log("BOTIN!", this.treasure, who);
   		Crafty.trigger('VillageVisited', this);
       Crafty('StatusText')
         .textColor('#ffffff')
@@ -95,6 +95,7 @@ Crafty.c('Chest', {
     var loc = this.at();
     world[loc.x][loc.y] = 0; // empty the location
     this.destroy();
+    return(true);
   }
 });
 
@@ -119,28 +120,53 @@ Crafty.c('Bush', {
 });
 
 
-Crafty.sprite(32,32, "../art/chars.png",{
-  girl01: [0,0], girl02: [0,1], girl03: [0,2],
-  girl04: [1,0], girl05: [1,1], girl06: [1,2],
-  girl07: [2,0], girl08: [2,1], girl09: [2,2],
-  girl10: [3,0], girl11: [3,1], girl12: [3,2]
+Crafty.sprite(32,32, "../art/chars1.png",{
+  fr: [0,0], fn: [1,0], fl: [2,0],
+  lr: [0,1], ln: [1,1], ll: [2,1],
+  rl: [0,2], rn: [1,2], rr: [2,2],
+  br: [0,3], bn: [1,3], bl: [2,3]
+});
+
+Crafty.sprite(32, "../art/chars1.png", {
+  PlayerSprite: [0,0]  
+});
+
+Crafty.c('Anim', {
+  init: function() {
+    this.requires('SpriteAnimation, PlayerSprite')
+      .reel('Visca',1000, [ [0, 0], [1, 0], [2, 0], [1, 0] ])
+      .reel('s'    , 100, [ [0, 0], [2, 0] ])
+      .reel('e'    , 100, [ [0, 2], [2, 2] ])
+      .reel('w'    , 100, [ [0, 1], [2, 1] ])
+      .reel('n'    , 100, [ [0, 3], [2, 3] ])
+      .reel('rest' , 100, [ [1, 0] ])
+      ;
+  }
 });
 
 Crafty.c('Girl', {
   laststop: 0,
   init: function() {
-    this.requires('Actor, Fourway, girl01, Tween, Collision')
+    this.requires('Actor, Fourway, Tween, Collision, Anim')
       .fourway(4)
       .onHit('Chest', this.catchTreasure)
       .stopOnSolids();
   },
   catchTreasure: function (data) {
     chest = data[0].obj;
-    chest.collect();
+    if (chest.collect()) {
+      this.animate('Visca', -1);
+    } else {
+      console.log("Buu hoo!")
+    }
   },
   doTheWalk: function() {
     if (this.path.length == 0) {
       // reset animation
+      console.log("End of walk");
+      if (!this.isPlaying('Visca'))
+        this.animate('rest', 2);
+
       return;
     }
     var g = this.path.shift();
@@ -148,17 +174,29 @@ Crafty.c('Girl', {
       g = this.path.shift(); // Ignore start position
 
       if (g === undefined) {
+        this.animate('rest', 1);
+
         // The player clicked over the player character.
         return;
       }
     }
     var attr;
     if (this.at().x == g[0]) {
-      attr = {y: g[1]*Game.map_grid.tile.height}
-      // animate 
+      attr = {y: g[1]*Game.map_grid.tile.height};
+      if (this.at().y > g[1]) {
+        // Moving north
+        this.animate('n', 2);
+      } else {
+        this.animate('s', 2);
+      }
     } else {
       attr = {x: g[0]*Game.map_grid.tile.height}
-      // animate
+      if (this.at().x > g[0]) {
+        // Moving west
+        this.animate('w', 2);
+      } else {
+        this.animate('e', 2);
+      }
     }
     console.log("Walking",g);
     this.tween(attr, 200);
