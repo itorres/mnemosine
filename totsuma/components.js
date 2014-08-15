@@ -64,9 +64,10 @@ Crafty.c('Question', {
   init: function () {
     this.requires('Formula');
     this.attr({
-      w: Game.map_grid.tile.width*Game.map_grid.width,
+      w: 288,
       h: Game.map_grid.tile.height
     });
+
   }
 });
 
@@ -107,8 +108,8 @@ Crafty.c('MouseTracker', {
   init: function() {
     this.requires('Actor, Mouse');
     this.bind('MouseDown', this._mouse_down);
-    this.w = Game.width();
-    this.h = Game.height();
+    this.w = Game.world.width();
+    this.h = Game.world.height();
   },
   _mouse_down: function(e) {
     var y  = Math.floor(e.realY/Game.map_grid.tile.height), x = Math.floor(e.realX/Game.map_grid.tile.width);
