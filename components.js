@@ -78,9 +78,13 @@ Crafty.c('Chest', {
     if (this.treasure) {
       console.log("BOTIN!", this.treasure);
   		Crafty.trigger('VillageVisited', this);
-      Crafty('StatusText').text('¡Muy bien!');
+      Crafty('StatusText')
+        .textColor('#ffffff')
+        .text('¡Muy bien!');
     } else {
-      Crafty('StatusText').text("Eso no es correcto");
+      Crafty('StatusText')
+        .textColor('#ff0000')
+        .text("Eso no es correcto");
       console.log("FALSE!");
     }
     var loc = this.at();
