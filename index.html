@@ -6,19 +6,26 @@
   content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:700' rel='stylesheet' type='text/css'>	<style type="text/css">
 		#scenario {
-			width: 310px;
-			height: 310px;
+			width: 320px;
+			height: 320px;
 			margin: 0px auto;
 			border: 0px;
 		}
 		#content {
-			margin: 0px auto; width: 310px;
+			margin: 0px auto; width: 320px;
 			text-align: center;
 		}
 	</style>
 	<script type="text/javascript">
+		var Game;
+		function pageLoaded() {
+			Game = document.getElementById('scenario').contentWindow.Game;
+
+		}
+	    window.addEventListener('load', pageLoaded);
+
 		function newGame() {
-		document.getElementById('scenario').contentWindow.Crafty.scene('Game');
+			document.getElementById('scenario').contentWindow.Crafty.scene('Game');
 
 		}
 
