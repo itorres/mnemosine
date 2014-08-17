@@ -25,7 +25,10 @@
 	    window.addEventListener('load', pageLoaded);
 
 		function newGame() {
-			document.getElementById('scenario').contentWindow.Crafty.scene('Game');
+			// TODO: Should fire a "Game.giveUp"
+			// Game.world.state=0;
+			Game.giveUp();
+			//document.getElementById('scenario').contentWindow.Crafty.scene('Game');
 
 		}
 
