@@ -6,13 +6,11 @@
 // http://gamedevelopment.tutsplus.com/tutorials/quick-tip-smoothly-move-an-entity-to-the-position-of-the-mouse--gamedev-7356
 // http://jsfiddle.net/Gamedevtuts/nkZjR/
 */
-var world;
-var wins = 0;
 Game = {
   // This defines our grid's size and the size of each of its tiles
   map_grid: {
-    width:  12,
-    height: 12,
+    width:  10,
+    height: 10,
     tile: {
       width:  32,
       height: 32
@@ -23,6 +21,8 @@ Game = {
   // The total width of the game screen. Since our grid takes up the entire screen
   //  this is just the width of a tile times the width of the grid
   world: {
+    wins: 0,
+    grid: [],
     width: function() {
       return Game.map_grid.width * Game.map_grid.tile.width;
     },
@@ -34,14 +34,14 @@ Game = {
     },
   },
   width: function() {
-    return 310;
+    return 320;
     return this.map_grid.width * this.map_grid.tile.width;
   },
 
   // The total height of the game screen. Since our grid takes up the entire screen
   //  this is just the height of a tile times the height of the grid
   height: function() {
-    return 310;
+    return 320;
     return this.map_grid.height * this.map_grid.tile.height;
   },
   

@@ -82,11 +82,11 @@ Crafty.c('Chest', {
   },
   collect: function(who) {
     var loc = this.at();
-    world[loc.x][loc.y] = 0; // empty the location
+    Game.world.grid[loc.x][loc.y] = 0; // empty the location
     this.destroy();
 
     if (this.treasure) {
-      wins++;
+      Game.world.wins++;
       return true;
 
       console.log("BOTIN!", this.treasure, who);
@@ -218,23 +218,25 @@ Crafty.c('Girl', {
   moveTo: function(x, y) {
     if (this.at === undefined) {
       console.log('this at reset');
-      // Ugly fix for "Uncaught TypeError: undefined is not a function"
+      /* FIXME: Ugly fix for "Uncaught TypeError: undefined is not a function"
+          Should find the culprit. It seems there's no Grid ancestor.
+      */
       Crafty.scene('Game');
     }
     console.log('Checking value of this', this);
-    
+
     var loc = this.at();
     var keep;
-    if (world[x][y] <= 0) {
-      keep = world[x][y];
-      world[x][y] = -65000;
+    if (Game.world.grid[x][y] <= 0) {
+      keep = Game.world.grid[x][y];
+      Game.world.grid[x][y] = -65000;
     }
-    var path = findPath(world, [loc.x, loc.y], [x, y], -1000);
-    console.log('Solving', world, [loc.x, loc.y], [x, y], -1000, path);
+    var path = findPath(Game.world.grid, [loc.x, loc.y], [x, y], -1000);
+    console.log('Solving', Game.world.grid, [loc.x, loc.y], [x, y], -1000, path);
 
-    world[x][y] = keep;
+    Game.world.grid[x][y] = keep;
 
-    console.log("moveTo",x,y, world[x][y], path);
+    console.log("moveTo",x,y, Game.world.grid[x][y], path);
     this.walkPath(path);
   },
   stopOnSolids: function() {
