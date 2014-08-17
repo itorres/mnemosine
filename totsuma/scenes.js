@@ -6,7 +6,7 @@ Crafty.scene('Game', function() {
         var operands = [];
         var guesses = [];
         while (operands.length<2) {
-          var candidate = Crafty.math.randomInt(1,10+wins);
+          var candidate = Crafty.math.randomInt(1,10+Game.world.wins);
           if (operands.length == 0 || candidate != operands[0])
             operands.push(candidate);
         }
@@ -47,20 +47,21 @@ Crafty.scene('Game', function() {
         return {guesses: guesses, result: operands[0]+operands[1], operands: operands}
     }
     
-    world = new Array(Game.map_grid.width);
+    Game.world.grid = new Array(Game.map_grid.width);
+    // Game.world.grid = world;
 
     for (var i = 0; i < Game.map_grid.width; i++) {
-      world[i] = new Array(Game.map_grid.height);
+      Game.world.grid[i] = new Array(Game.map_grid.height);
       for (var y = 0; y < Game.map_grid.height; y++) {
-        world[i][y] = -65535;
+        Game.world.grid[i][y] = -65535;
       }
     }
-    world[1][1] = 1;
+    Game.world.grid[1][1] = 1;
     
     var sums = setupSum();
     function placeBush(x,y) {
       Crafty.e('Bush').at(x, y);
-      world[x][y] = 2;
+      Game.world.grid[x][y] = 2;
     }
 
     // Place a tree at every edge square on our grid of 16x16 tiles
@@ -70,8 +71,8 @@ Crafty.scene('Game', function() {
         if (at_edge) {
           // Place a tree entity at the current tile
           Crafty.e('Tree').at(x, y);
-          world[x][y] = 1;
-        } else if (Math.random() < 0.06 && world[x][y] == -65535) {
+          Game.world.grid[x][y] = 1;
+        } else if (Math.random() < 0.06 && Game.world.grid[x][y] == -65535) {
           // Place a bush entity at the current tile
           placeBush(x,y);
         }
@@ -81,11 +82,11 @@ Crafty.scene('Game', function() {
     while (sums.guesses.length > 0) {
       var x = Crafty.math.randomInt(0,Game.map_grid.width-1);
       var y = Crafty.math.randomInt(0,Game.map_grid.height-1);
-      // console.log("Candidate position",x,y,world[x][y])
-      if (Math.random() < 0.06 && world[x][y] == -65535) {
+      // console.log("Candidate position",x,y,Game.world.grid[x][y])
+      if (Math.random() < 0.06 && Game.world.grid[x][y] == -65535) {
         var text = sums.guesses.pop();
         var chest = Crafty.e('Chest').at(x, y).text(text);
-        world[x][y] = chest.index;
+        Game.world.grid[x][y] = chest.index;
       }
     }
     var resultPlaced = false;
@@ -93,27 +94,29 @@ Crafty.scene('Game', function() {
     while (!resultPlaced) {
       var x = Crafty.math.randomInt(0,Game.map_grid.width-1);
       var y = Crafty.math.randomInt(0,Game.map_grid.height-1);
-      if (world[x][y] == -65535) {
+      if (Game.world.grid[x][y] == -65535) {
         var treasure = Crafty.e('Chest').at(x, y).text(sums.result);
         treasure.treasure = true;
-        world[x][y] = chest.index;
+        Game.world.grid[x][y] = chest.index;
         resultPlaced = [x,y];
       }
     }
 
     // Check scenario
     placeBush(1,2);
-    world[resultPlaced[0]][resultPlaced[1]] = -65000;
-    var path = findPath(world, [1,1], resultPlaced, -1000);
+    Game.world.grid[resultPlaced[0]][resultPlaced[1]] = -65000;
+    var path = findPath(Game.world.grid, [1,1], resultPlaced, -1000);
     if (path.length == 0) {
       // Unsolvable scenario, reshuffle
-      console.log('Unsolvable scenario, reshuffle', world, [1,1], resultPlaced, -1000, path);
+      console.log('Unsolvable scenario, reshuffle', Game.world.grid, [1,1], resultPlaced, -1000, path);
       Crafty.scene('Game');
     }
-    world[resultPlaced[0]][resultPlaced[y]] = -1;
+    Game.world.grid[resultPlaced[0]][resultPlaced[y]] = -1;
 
     this.player = Crafty.e('Girl').at(1, 1);
     Crafty.viewport.follow(this.player,0,0);
+    console.log("json",JSON.stringify(Game));
+
    // Crafty.viewport.scale(1.5);
 }, function() {
 });
