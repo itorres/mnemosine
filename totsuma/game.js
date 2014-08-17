@@ -21,8 +21,10 @@ Game = {
   // The total width of the game screen. Since our grid takes up the entire screen
   //  this is just the width of a tile times the width of the grid
   world: {
+    state: 0,
     wins: 0,
     grid: [],
+
     width: function() {
       return Game.map_grid.width * Game.map_grid.tile.width;
     },
@@ -44,7 +46,44 @@ Game = {
     return 320;
     return this.map_grid.height * this.map_grid.tile.height;
   },
-  
+  setup: function() {
+    this.world.sum = {
+      guesses:  [],
+      operands: [],
+      result: 0
+    }
+    var operands = this.world.sum.operands;
+    while (operands.length<2) {
+      var candidate = Crafty.math.randomInt(1,10+Game.world.wins);
+      if (operands.length == 0 || candidate != operands[0])
+        this.world.sum.operands.push(candidate);
+    }
+    this.world.sum.result = operands[0]+operands[1];
+    var guesses  = this.world.sum.guesses;
+    var result = this.world.sum.result;
+    console.log("Setup sums");
+    while (guesses.length<6) {
+      var candidate = result - Math.round(Math.random()*10);
+      if (candidate > result - 5 && candidate != result) {
+        guesses.push(candidate);
+      }
+    }
+
+    Crafty.e('Question').at(0,0)
+      .text('Resuelve ' + operands.join(' + '));
+
+
+  },
+  giveUp: function() {
+    /*
+      TODO:
+      - change status to -something (-2);
+      - Save state
+    */
+    this.world.state = 0;
+    Crafty.scene('Game');
+
+  },
   // Initialize and start our game
   start: function() {
 
@@ -53,4 +92,5 @@ Game = {
     Crafty.background('rgb(249, 223, 125)');
     Crafty.scene('Game');
   }
+
 }
