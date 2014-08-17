@@ -2,6 +2,8 @@
 Crafty.scene('Game', function() {
     Crafty.e("MouseTracker").at(0,0);
     
+    // TODO: Move setupSum back into game and keep values in Game object
+
     function setupSum () {
         var operands = [];
         var guesses = [];
@@ -113,8 +115,12 @@ Crafty.scene('Game', function() {
     }
     Game.world.grid[resultPlaced[0]][resultPlaced[y]] = -1;
 
-    this.player = Crafty.e('Girl').at(1, 1);
+    this.player = Crafty.e('Player').at(1, 1);
     Crafty.viewport.follow(this.player,0,0);
+
+    // Todo: 
+    // - Sync state with server
+    // - Start game from JSON state in places like the Player.at reset.
     console.log("json",JSON.stringify(Game));
 
    // Crafty.viewport.scale(1.5);

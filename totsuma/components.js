@@ -114,7 +114,7 @@ Crafty.c('MouseTracker', {
   },
   _mouse_down: function(e) {
     var y  = Math.floor(e.realY/Game.map_grid.tile.height), x = Math.floor(e.realX/Game.map_grid.tile.width);
-    Crafty('Girl').moveTo(x, y);
+    Crafty('Player').moveTo(x, y);
   }
 })
 // A Bush is just an Actor with a certain color
@@ -151,7 +151,7 @@ Crafty.c('Anim', {
   }
 });
 
-Crafty.c('Girl', {
+Crafty.c('Player', {
   laststop: 0,
   init: function() {
     this.requires('Actor, Fourway, Tween, Collision, Anim')
