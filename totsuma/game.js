@@ -23,6 +23,8 @@ Game = {
   world: {
     state: 0,
     wins: 0,
+    tile: 32,
+    side: 10,
     grid: [],
 
     width: function() {
@@ -34,6 +36,16 @@ Game = {
     height: function() {
       return Game.map_grid.height * Game.map_grid.tile.height;
     },
+  },
+  clearGrid: function() {
+    Game.world.grid = new Array(Game.map_grid.width);
+    console.log("clearGrid");
+    for (var x = 0; x < Game.world.side; x++) {
+      Game.world.grid[x] = new Array(Game.world.side);
+      for (var y = 0; y < Game.world.side; y++) {
+        Game.world.grid[x][y] = -65535;
+      }
+    }
   },
   width: function() {
     return 320;
@@ -63,8 +75,9 @@ Game = {
     var result = this.world.sum.result;
     console.log("Setup sums");
     while (guesses.length<6) {
-      var candidate = result - Math.round(Math.random()*10);
-      if (candidate > result - 5 && candidate != result) {
+      var half = Math.round(result/2);
+      var candidate = Crafty.math.randomInt(result-half, result+half);
+      if (candidate != result) {
         guesses.push(candidate);
       }
     }
