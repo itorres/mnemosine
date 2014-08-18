@@ -4,7 +4,8 @@ Crafty.c('Grid', {
   init: function() {
     this.attr({
       w: Game.map_grid.tile.width,
-      h: Game.map_grid.tile.height
+      h: Game.map_grid.tile.height,
+      placed: false
     })
   },
 
@@ -14,11 +15,23 @@ Crafty.c('Grid', {
       return { x: Math.floor(this.x/Game.map_grid.tile.width), y: Math.floor(this.y/Game.map_grid.tile.height) }
     } else {
       this.attr({ x: x * Game.map_grid.tile.width, y: y * Game.map_grid.tile.height });
+      Game.world.grid[x][y] = this.index;
       return this;
     }
   },
   atEdge: function() {
     return x == 0 || x == Game.map_grid.width - 1 || y == 0 || y == Game.map_grid.height - 1;
+  },
+  place: function() {
+    while (!this.placed) {
+        var x = Crafty.math.randomInt(0,Game.map_grid.width -1);
+        var y = Crafty.math.randomInt(0,Game.map_grid.height-1);
+        if (Game.world.grid[x][y] == -65535) {
+          this.at(x,y);
+          this.placed=true;
+        } 
+    }
+    return this;
   }
 });
 
@@ -32,6 +45,7 @@ Crafty.c('Actor', {
 
 // A Tree is just an Actor with a certain color
 Crafty.c('Tree', {
+  index: 1,
   init: function() {
     this.requires('Actor, Color, Solid')
       .color('rgb(20, 125, 40)');
@@ -60,6 +74,7 @@ Crafty.c('StatusText', {
     });
   }
 });
+
 Crafty.c('Question', {
   init: function () {
     this.requires('Formula');
@@ -84,13 +99,14 @@ Crafty.c('Chest', {
     var loc = this.at();
     Game.world.grid[loc.x][loc.y] = 0; // empty the location
     this.destroy();
+    return this.treasure;
 
     if (this.treasure) {
-      Game.world.wins++;
+      
       return true;
 
       console.log("BOTIN!", this.treasure, who);
-  		Crafty.trigger('VillageVisited', this);
+  		//Crafty.trigger('VillageVisited', this);
       Crafty('StatusText')
         .textColor('#ffffff')
         .text('¡Muy bien!');
@@ -104,13 +120,22 @@ Crafty.c('Chest', {
     }
   }
 });
+Crafty.c('Treasure', {
+  init: function() {
+    this.requires('Chest')
+      //.color('rgb(200, 125, 140)')
+    ;
+    this.treasure = true;
+  }
+});
 
 Crafty.c('MouseTracker', {
   init: function() {
-    this.requires('Actor, Mouse');
+    this.requires('2D, Canvas, Mouse');
     this.bind('MouseDown', this._mouse_down);
     this.w = Game.world.width();
     this.h = Game.world.height();
+    this.x = 0; this.y = 0;
   },
   _mouse_down: function(e) {
     var y  = Math.floor(e.realY/Game.map_grid.tile.height), x = Math.floor(e.realX/Game.map_grid.tile.width);
@@ -119,6 +144,7 @@ Crafty.c('MouseTracker', {
 })
 // A Bush is just an Actor with a certain color
 Crafty.c('Bush', {
+  index: 2,
   init: function() {
     this.requires('Actor, Color, Solid')
       .color('rgb(20, 185, 40)');
@@ -152,10 +178,10 @@ Crafty.c('Anim', {
 });
 
 Crafty.c('Player', {
+  index: 300,
   laststop: 0,
   init: function() {
-    this.requires('Actor, Fourway, Tween, Collision, Anim')
-      .fourway(4)
+    this.requires('Actor, Tween, Collision, Anim')
       .onHit('Chest', this.catchTreasure)
       .stopOnSolids();
   },
@@ -163,6 +189,7 @@ Crafty.c('Player', {
     chest = data[0].obj;
     if (chest.collect()) {
       this.animate('Visca', -1);
+      Game.world.wins++;
     } else {
       this.animate('boo',   2);
     }
@@ -180,10 +207,12 @@ Crafty.c('Player', {
       g = this.path.shift(); // Ignore start position
 
       if (g === undefined) {
-        if (this.isPlaying('Visca'))
+        if (this.isPlaying('Visca')) {          
+          Game.world.state=2;
           Crafty.scene('Game');
-        else
+        } else {
           this.animate('rest', 1);
+        }
         // The player clicked over the player character.
         return;
       }
@@ -217,7 +246,7 @@ Crafty.c('Player', {
   },
   moveTo: function(x, y) {
     if (this.at === undefined) {
-      console.log('this at reset');
+      console.log('this at reset',this);
       /* FIXME: Ugly fix for "Uncaught TypeError: undefined is not a function"
           Should find the culprit. It seems there's no Grid ancestor.
       */
