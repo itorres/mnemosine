@@ -17,13 +17,22 @@
 		}
 	</style>
 	<script type="text/javascript">
-		var Game;
+		var Game, Crafty, PS;
 		function pageLoaded() {
 			Game = document.getElementById('scenario').contentWindow.Game;
+			Crafty = document.getElementById('scenario').contentWindow.Crafty;
+			PS = document.getElementById('scenario').contentWindow.playersprite;
 
 		}
 	    window.addEventListener('load', pageLoaded);
+	    function changePlayer(sprite) {
+	    	Crafty.sprite(32, "../art/" + sprite + ".png", {
+			  PlayerSprite: [0,0]  
+			});
 
+	    	PS = sprite;
+			Game.giveUp();
+	    }
 		function newGame() {
 			// TODO: Should fire a "Game.giveUp"
 			// Game.world.state=0;
@@ -38,6 +47,9 @@
   <div id="content">
 	<iframe id="scenario" seamless="seamless" scrolling="no" src="totsuma"></iframe>  
   	<button id="reinicio" onclick="newGame();">Nueva partida</button>	
+  	<button id="reinicio" onclick="changePlayer('chars2');">Jan</button>	
+  	<button id="reinicio" onclick="changePlayer('chars6');">Nil</button>	
+  	<button id="reinicio" onclick="changePlayer('chars1');">Pau</button>	
   </div>
 </body>
 </html>

@@ -20,6 +20,7 @@ Game = {
 
   // The total width of the game screen. Since our grid takes up the entire screen
   //  this is just the width of a tile times the width of the grid
+  playersprite: 'chars1.png',
   world: {
     state: 0,
     wins: 0,
@@ -28,17 +29,17 @@ Game = {
     grid: [],
 
     width: function() {
-      return Game.map_grid.width * Game.map_grid.tile.width;
+      return Game.world.side * Game.world.tile;
     },
 
     // The total height of the game screen. Since our grid takes up the entire screen
     //  this is just the height of a tile times the height of the grid
     height: function() {
-      return Game.map_grid.height * Game.map_grid.tile.height;
+      return Game.width();
     },
   },
   clearGrid: function() {
-    Game.world.grid = new Array(Game.map_grid.width);
+    Game.world.grid = new Array(Game.world.side);
     console.log("clearGrid");
     for (var x = 0; x < Game.world.side; x++) {
       Game.world.grid[x] = new Array(Game.world.side);
@@ -49,14 +50,12 @@ Game = {
   },
   width: function() {
     return 320;
-    return this.map_grid.width * this.map_grid.tile.width;
   },
 
   // The total height of the game screen. Since our grid takes up the entire screen
   //  this is just the height of a tile times the height of the grid
   height: function() {
     return 320;
-    return this.map_grid.height * this.map_grid.tile.height;
   },
   setup: function() {
     this.world.sum = {
@@ -73,19 +72,24 @@ Game = {
     this.world.sum.result = operands[0]+operands[1];
     var guesses  = this.world.sum.guesses;
     var result = this.world.sum.result;
-    console.log("Setup sums");
-    while (guesses.length<6) {
-      var half = Math.round(result/2);
-      var candidate = Crafty.math.randomInt(result-half, result+half);
-      if (candidate != result) {
-        guesses.push(candidate);
-      }
-    }
 
     Crafty.e('Question').at(0,0)
       .text('Resuelve ' + operands.join(' + '));
 
+    console.log("Setup sums finished");
 
+  },
+  newGuess: function() {
+    var result= this.world.sum.result,
+        half = Math.round(result/2),
+        candidate = false;
+    while (candidate === false) {
+      candidate = Crafty.math.randomInt(result-half, result+half);
+      if (candidate != result) {
+        return candidate;
+      }
+      candidate = false;
+    }
   },
   giveUp: function() {
     /*

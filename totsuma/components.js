@@ -1,10 +1,12 @@
+var playersprite = 'chars1';
+
 // The Grid component allows an element to be located
 //  on a grid of tiles
 Crafty.c('Grid', {
   init: function() {
     this.attr({
-      w: Game.map_grid.tile.width,
-      h: Game.map_grid.tile.height,
+      w: Game.world.tile,
+      h: Game.world.tile,
       placed: false
     })
   },
@@ -12,24 +14,29 @@ Crafty.c('Grid', {
   // Locate this entity at the given position on the grid
   at: function(x, y) {
     if (x === undefined && y === undefined) {
-      return { x: Math.floor(this.x/Game.map_grid.tile.width), y: Math.floor(this.y/Game.map_grid.tile.height) }
+      return { x: Math.floor(this.x/Game.world.tile), y: Math.floor(this.y/Game.world.tile) }
     } else {
-      this.attr({ x: x * Game.map_grid.tile.width, y: y * Game.map_grid.tile.height });
+      this.attr({ x: x * Game.world.tile, y: y * Game.world.tile });
       Game.world.grid[x][y] = this.index;
       return this;
     }
   },
-  atEdge: function() {
-    return x == 0 || x == Game.map_grid.width - 1 || y == 0 || y == Game.map_grid.height - 1;
+  atEdge: function(x, y) {
+    if (x === undefined && y === undefined) {
+      x = this.x; y = this.y;
+    }
+    return x == 0 || x == Game.world.side - 1 || y == 0 || y == Game.world.side - 1;
+
+    
   },
   place: function() {
     while (!this.placed) {
-        var x = Crafty.math.randomInt(0,Game.map_grid.width -1);
-        var y = Crafty.math.randomInt(0,Game.map_grid.height-1);
-        if (Game.world.grid[x][y] == -65535) {
+        var x = Crafty.math.randomInt(0,Game.world.side - 1);
+        var y = Crafty.math.randomInt(0,Game.world.side - 1);
+        if (!this.atEdge(x,y) && Game.world.grid[x][y] == -65535) {
           this.at(x,y);
           this.placed=true;
-        } 
+        }
     }
     return this;
   }
@@ -56,11 +63,11 @@ Crafty.c('Formula', {
   init: function () {
     this.requires('2D, Color, DOM, Grid, Text')
       .unselectable()
-      .textFont({ family: 'Ubuntu Mono', lineHeight: '32px', size: '28px' })
+      .textFont({ family: 'Roboto Condensed', lineHeight: '32px', size: '28px' })
       .css({"textAlign": "center", "verticalAlign": "middle"});
     this.attr({
-      w: Game.map_grid.tile.width,
-      h: Game.map_grid.tile.height
+      w: Game.world.tile,
+      h: Game.world.tile
     })
   }
 });
@@ -69,8 +76,8 @@ Crafty.c('StatusText', {
   init: function () {
     this.requires('Formula');
     this.attr({
-      w: Game.map_grid.tile.width*Game.map_grid.width,
-      h: Game.map_grid.tile.height
+      w: Game.world.tile * Game.world.side,
+      h: Game.world.tile
     });
   }
 });
@@ -80,7 +87,7 @@ Crafty.c('Question', {
     this.requires('Formula');
     this.attr({
       w: 288,
-      h: Game.map_grid.tile.height
+      h: Game.world.tile
     });
 
   }
@@ -97,7 +104,7 @@ Crafty.c('Chest', {
   },
   collect: function(who) {
     var loc = this.at();
-    Game.world.grid[loc.x][loc.y] = 0; // empty the location
+    Game.world.grid[loc.x][loc.y] = -65000; // empty the location
     this.destroy();
     return this.treasure;
 
@@ -138,7 +145,7 @@ Crafty.c('MouseTracker', {
     this.x = 0; this.y = 0;
   },
   _mouse_down: function(e) {
-    var y  = Math.floor(e.realY/Game.map_grid.tile.height), x = Math.floor(e.realX/Game.map_grid.tile.width);
+    var y  = Math.floor(e.realY/Game.world.tile), x = Math.floor(e.realX/Game.world.tile);
     Crafty('Player').moveTo(x, y);
   }
 })
@@ -151,15 +158,7 @@ Crafty.c('Bush', {
   },
 });
 
-
-Crafty.sprite(32,32, "../art/chars1.png",{
-  fr: [0,0], fn: [1,0], fl: [2,0],
-  lr: [0,1], ln: [1,1], ll: [2,1],
-  rl: [0,2], rn: [1,2], rr: [2,2],
-  br: [0,3], bn: [1,3], bl: [2,3]
-});
-
-Crafty.sprite(32, "../art/chars1.png", {
+Crafty.sprite(32, "../art/" + playersprite + ".png", {
   PlayerSprite: [0,0]  
 });
 
@@ -219,7 +218,7 @@ Crafty.c('Player', {
     }
     var attr;
     if (this.at().x == g[0]) {
-      attr = {y: g[1]*Game.map_grid.tile.height};
+      attr = {y: g[1]*Game.world.tile};
       if (this.at().y > g[1]) {
         // Moving north
         this.animate('n', 2);
@@ -227,7 +226,7 @@ Crafty.c('Player', {
         this.animate('s', 2);
       }
     } else {
-      attr = {x: g[0]*Game.map_grid.tile.height}
+      attr = {x: g[0]*Game.world.tile}
       if (this.at().x > g[0]) {
         // Moving west
         this.animate('w', 2);
@@ -243,6 +242,17 @@ Crafty.c('Player', {
     this.path = path;
     console.log("walkPath",path);
     this.doTheWalk();
+  },
+  canGoToTreasure: function() {
+    var loc = this.at();
+    var chestloc = [Crafty('Treasure').at().x,Crafty('Treasure').at().y];
+    Game.world.grid[Crafty('Treasure').at().x][Crafty('Treasure').at().y] = -65000;
+    var path = findPath(Game.world.grid, [loc.x, loc.y], chestloc, -1000);
+    Game.world.grid[Crafty('Treasure').at().x][Crafty('Treasure').at().y] = Crafty('Treasure').index;
+    if (path.length > 0) {
+      return true;
+    }
+    return false;
   },
   moveTo: function(x, y) {
     if (this.at === undefined) {
