@@ -1,0 +1,106 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Mnemosine</title>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<script src="bower_components/platform/platform.js"></script>
+
+  <style type="text/css">
+		#scenario {
+			width: 320px;
+			height: 320px;
+			margin: 0px auto;
+			border: 0px;
+		}
+		#content {
+			margin: 0px auto; width: 320px;
+			text-align: center;
+		}
+		#capture video, #capture img, #capture canvas {
+			width: 240px; height: 240px;
+		}
+		#capture img {
+			border-radius: 50%;
+		}
+		#capture canvas {
+			display: none;
+		}
+	</style>
+	<script type="text/javascript">
+		var Game, Crafty, PS;
+		function pageLoaded() {
+			Game = document.getElementById('scenario').contentWindow.Game;
+			Crafty = document.getElementById('scenario').contentWindow.Crafty;
+			PS = document.getElementById('scenario').contentWindow.playersprite;
+
+		}
+	    window.addEventListener('load', pageLoaded);
+	    function changePlayer(sprite) {
+	    	Crafty.sprite(32, "../art/" + sprite + ".png", {
+			  PlayerSprite: [0,0]  
+			});
+
+	    	PS = sprite;
+			Game.giveUp();
+	    }
+		function newGame() {
+			// TODO: Should fire a "Game.giveUp"
+			// Game.world.state=0;
+			Game.giveUp();
+			//document.getElementById('scenario').contentWindow.Crafty.scene('Game');
+
+		}
+
+	</script>
+</head>
+<body>
+<div id="capture">
+	<video autoplay></video>
+	<img src="">
+	<canvas></canvas>
+</div>
+<script type="text/javascript">
+navigator.getUserMedia  = navigator.getUserMedia ||
+                          navigator.webkitGetUserMedia ||
+                          navigator.mozGetUserMedia ||
+                          navigator.msGetUserMedia;
+
+var video = document.querySelector('video');
+  var canvas = document.querySelector('canvas');
+  var ctx = canvas.getContext('2d');
+  var localMediaStream = null;
+
+  function snapshot() {
+    if (localMediaStream) {
+    	canvas.setAttribute("width", video.videoWidth);
+    	canvas.setAttribute("height", video.videoHeight);
+
+    	ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      // "image/webp" works in Chrome.
+      // Other browsers will fall back to image/png.
+      document.querySelector('img').src = canvas.toDataURL('image/webp');
+    }
+  }
+  video.addEventListener('click', snapshot, false);
+
+if (navigator.getUserMedia) {
+var vgaConstraints = {
+  video: {
+    mandatory: {
+      maxWidth: 240,
+      maxHeight: 240
+    }
+  }
+};
+
+  navigator.getUserMedia(vgaConstraints, function(stream) {
+    video.src = window.URL.createObjectURL(stream);
+    localMediaStream = stream;
+  }, function(){console.log("Sin camara y a lo loco")});
+} else {
+  console.log("Sin camara y a lo MUY loco");
+}
+</script>
+</body>
+</html>
