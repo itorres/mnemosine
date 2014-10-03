@@ -1,0 +1,253 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Mnemosine</title>
+	<!--meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"-->
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<style type="text/css" shim-shadowdom>
+	@font-face {
+		font-family: 'Droid Sans Mono';
+		src: url("fonts/droid-sans-mono.ttf") format("truetype");
+		font-weight: normal;
+		font-style: normal;
+	}
+	* {
+		font-size: 8vmin;
+
+	}
+	#debug {
+		background: #ff6666;
+		bottom: -10vmin;
+		max-height: 10vmin;
+		font-size: 10pt;
+		text-align: left;
+	}
+	body {
+		font-family: 'Droid Sans Mono', monospace;
+		margin: 0;
+		padding: 0px;
+		font-size: 10vmin;
+		text-align: center;
+	}
+
+
+	h1 {
+		text-align: right;
+		height: 12vmin;
+		line-height: 12vmin;
+		padding: 0 10px;
+	}
+	h1, .option, .avatar  {
+		background-color: #4F7DC9;
+		color: #FFF;
+		box-shadow: .5vh 1vh 2vh rgba(50, 50, 50, 0.75), .5vh 1vh 2vh rgba(50, 50, 50, 0.75);
+		text-shadow: 1vh 1vh 2vh rgba(50, 50, 50, 0.75);
+	}
+	.content{
+		height: 60vh;
+
+		margin: 0 auto;
+		display: inline-block;
+	}
+	#settings {
+		display: none;
+	}
+	.option {
+
+		cursor: pointer;
+		display: block;
+		margin: .2em;
+		border-radius: 50%; text-align: center; padding: .2em .2em;
+		background: #4F7DC9;
+	}
+	button.avatar {
+		position: absolute;
+		top: 5.5vmin; left: 2vmin;
+		background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvVFIvMjAwMS9SRUMtU1ZHLTIwMDEwOTA0L0RURC9zdmcxMC5kdGQnPjxzdmcgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjQgMjQiIGlkPSJMYXllcl8xIiB2ZXJzaW9uPSIxLjAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGNpcmNsZSBjeD0iMTIiIGN5PSI4IiByPSI0Ii8+PHBhdGggZD0iTTEyLDE0Yy02LjEsMC04LDQtOCw0djJoMTZ2LTJDMjAsMTgsMTguMSwxNCwxMiwxNHoiLz48L3N2Zz4=') no-repeat 50% 50% gray;
+		border-radius: 50%;
+		width: 12vmin; height: 12vmin;
+
+	}
+	button {
+		border: none;
+		transition: all 150ms ease;
+	    /* non-accessible */
+	    outline: none;
+	}
+	button:active {
+		transform: translateY(.5vh);
+		box-shadow: .5vh 1vh 2vh rgba(50, 50, 50, 0.75);
+		animation: none;
+	}
+	.column {
+		height: 100%;
+		display: inline-block;
+	}
+	.operation > div {
+		font-size: 10vmin;
+		text-align: right;
+	}
+	.operation input {
+		width: .8em;
+	}
+	.operation > div.result > input {
+		text-align: right;
+		font-family: 'Droid Sans Mono', monospace;
+		border: none; border-top: black 2px solid; background-color: WhiteSmoke;
+		width: .8em; padding: 0; margin: 0;
+	}
+	.operand:nth-child(2)::before {
+		content: "+";
+	}
+	input.result {
+		width: 1em;
+	}
+	.operation > div.result > input.correct {
+		background-color: #66ff66;
+	}
+	.operation > div.result > input.wrong {
+		background-color: #ff6666;
+	}
+	.operation > div.result > input.partial {
+		background-color: #ffcc66;
+	}
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+	</style>
+	<script type="text/javascript">
+	// Returns a random integer between min (included) and max (excluded)
+	// Using Math.round() will give you a non-uniform distribution!
+	function getRandomInt(min, max) {
+	  return Math.floor(Math.random() * (max - min)) + min;
+	}
+
+	function write(k, v) {
+		localStorage[k] = JSON.stringify(v);
+	}
+
+	function read(k) {
+		if (localStorage[k] === undefined) {
+			return undefined;
+		}
+		return JSON.parse(localStorage[key]);
+	}
+
+	function register(what) {
+		var key = "l" + getLevel();
+
+		if (Number(read(key)) === NaN) {
+			key = 1;
+		}
+		write(key,read(key) + what);
+	}
+
+	function setLevel (level) {
+		localStorage["level"] = level;
+	}
+
+	function getLevel () {
+		var level = Number(localStorage["level"]);
+		if (level == NaN) {
+			return 1;
+		}
+		return level;
+	}
+
+	function setup () {
+		switch (getLevel()) {
+			case 1:
+				operands = [getRandomInt(1,9),   getRandomInt(1,9)];
+			case 2:
+				operands = [getRandomInt(1,50),  getRandomInt(1,50)];
+			case 3:
+
+			case 4:
+			default:
+				operands = [getRandomInt(30,99), getRandomInt(30,99)];
+		}
+		real_result = operands.reduce(function(a,b) {return a+b});
+		opels = document.querySelectorAll(".operand");
+		for (var i = 0; i < opels.length; i++) {
+			var op = String(operands[i]);
+			for (var c = 0; c < op.length; c++) {
+				var cel = document.createElement("input")
+				opels[i].appendChild(cel);
+				cel.value = op[c];
+			}
+			// opels[i].innerText = operands[i];
+		};
+		//result.style.width = String(real_result).length + "em";
+	}
+
+	function check () {
+		function checkLength () {
+			return String(real_result).length == String(result.value).length;
+		}
+		if (result.value.length === 0) {
+
+		}
+		if (!checkLength()) {
+			result.classList.remove("partial");
+			console.log("Partial");
+
+		} else {
+			if (Number(real_result) === Number(result.value) ) {
+				result.classList.remove("wrong");
+				result.classList.add("correct");
+				console.log("correct");
+
+			} else {
+				result.classList.add("wrong");
+				console.log("wrong");
+			}
+		}
+		return 
+	}
+	function options () {
+		
+	}
+	function setMode (mode) {
+		document.title=mode;
+		document.getElementsByTagName("h1")[0].innerText = mode;
+	}
+	var result;
+	var real_result;
+	var operands;
+
+    window.addEventListener('load', function() {
+   		result = document.getElementById('result');
+   		setMode("Suma");
+   		setup();
+   		result.addEventListener('input', function (e) {
+   			check();
+   		});
+
+    });
+
+    function debug(wat) {
+    	document.getElementById('debug').innerText += new Date() + "> " + wat + "\n";
+    }
+	</script>
+</head>
+<body>
+	<button class="avatar">&nbsp;</button><h1>Suma</h1>
+	<div class="content">
+		<div class="operation column">
+			<div class="operand">25</div>
+			<div class="operand"><span>1</span><span>2</span></div>
+			<div class="result">
+				<input id="result" type="number"><input id="result" type="number" autofocus>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

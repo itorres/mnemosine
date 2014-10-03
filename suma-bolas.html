@@ -1,0 +1,197 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Mnemosine</title>
+	<!--meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"-->
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<style type="text/css" shim-shadowdom>
+	@font-face {
+		font-family: 'Droid Sans Mono';
+		src: url("fonts/droid-sans-mono.ttf") format("truetype");
+		font-weight: normal;
+		font-style: normal;
+	}
+	* {
+		font-size: 8vmin;
+
+	}
+	body {
+		font-family: 'Droid Sans Mono', monospace;
+		margin: 0;
+		padding: 0px;
+		font-size: 10vmin;
+		text-align: center;
+	}
+
+
+	h1 {
+		height: 12vmin;
+		line-height: 12vmin;
+		padding: 0 10px;
+	}
+	h1, .option  {
+		background-color: #4F7DC9;
+		color: #FFF;
+		box-shadow: .5vh 1vh 2vh rgba(50, 50, 50, 0.75), .5vh 1vh 2vh rgba(50, 50, 50, 0.75);
+		text-shadow: 1vh 1vh 2vh rgba(50, 50, 50, 0.75);
+	}
+	.content{
+		height: 60vh;
+
+		margin: 0 auto;
+		display: inline-block;
+	}
+	#settings {
+		display: none;
+	}
+	.option {
+
+		cursor: pointer;
+		display: block;
+		margin: .2em;
+		border-radius: 50%; text-align: center; padding: .2em .2em;
+		background: #4F7DC9;
+	}
+	button {
+		border: none;
+		transition: all 150ms ease;
+	}
+	button:active {
+		transform: translateY(.5vh);
+		box-shadow: .5vh 1vh 2vh rgba(50, 50, 50, 0.75);
+		animation: none;
+	}
+	.column {
+		height: 100%;
+		display: inline-block;
+	}
+	.operation > div {
+		font-size: 10vmin;
+		text-align: right;
+	}
+	.operation > div.result > input {
+		text-align: right;
+		font-family: 'Droid Sans Mono', monospace;
+		border: none; border-top: black 2px solid; background-color: WhiteSmoke;
+		width: 2em;
+	}
+	.operand:nth-child(2)::before {
+		content: "+";
+	}
+	.operation > div.result > input.correct {
+		background-color: green;
+	}
+	.operation > div.result > input.wrong {
+		background-color: red;
+	}
+	</style>
+	<script type="text/javascript">
+	// Returns a random integer between min (included) and max (excluded)
+	// Using Math.round() will give you a non-uniform distribution!
+	function getRandomInt(min, max) {
+	  return Math.floor(Math.random() * (max - min)) + min;
+	}
+
+	function write(k, v) {
+		localStorage[k] = JSON.stringify(v);
+	}
+
+	function read(k) {
+		if (localStorage[k] === undefined) {
+			return undefined;
+		}
+		return JSON.parse(localStorage[key]);
+	}
+
+	function register(what) {
+		var key = "l" + getLevel();
+
+		if (Number(read(key)) === NaN) {
+			key = 1;
+		}
+		write(key,read(key) + what);
+	}
+
+	function setLevel (level) {
+		localStorage["level"] = level;
+	}
+
+	function getLevel () {
+		var level = Number(localStorage["level"]);
+		if (level == NaN) {
+			return 1;
+		}
+		return level;
+	}
+
+	function limits () {
+		switch (getLevel()) {
+			case 3:
+				return getRandomInt(30,99);
+			case 2:
+				return getRandomInt(1,50);
+			case 1:
+				return getRandomInt(1,9);
+				break;
+		}
+	}
+	function operands () {
+		var operands = document.querySelectorAll(".operand")
+	}
+	function check () {
+		var result   = document.getElementsByTagName("input")[0].value;
+		var operands = document.querySelectorAll(".operand");
+		var real_result = 0;
+		for (var i = 0; i < operands.length; i++) {
+			real_result += Number(operands[i].innerText);
+		}
+		console.log(real_result," ", result)
+		return real_result === Number(result);
+	}
+	function options () {
+		
+	}
+    window.addEventListener('load', function() {
+		var options =document.getElementsByClassName("option");
+		for (var i = options.length - 1; i >= 0; i--) {
+			console.log(options[i]);
+			options[i].addEventListener("click", function(e) {
+				var value = e.target.textContent;
+				document.getElementsByTagName("input")[0].value = value;
+				console.log(e.target.textContent);
+				if (check()) {
+					document.getElementsByTagName("input")[0].classList.remove("wrong");
+					document.getElementsByTagName("input")[0].classList.add("correct");
+				} else {
+					document.getElementsByTagName("input")[0].classList.add("wrong");
+	
+				}
+			});
+		};
+    });
+
+	</script>
+</head>
+<body>
+	<h1>Suma</h1>
+	<div class="content">
+		<div class="column">
+			<button class="option">50</button>
+			<button class="option">60</button>
+			<button class="option">70</button>
+		</div>
+		<div class="operation column">
+			<div class="operand">25</div>
+			<div class="operand">12</div>
+			<div class="result"><input type="number"></div>
+		</div>
+		<div class="column">
+			<button class="option">80</button>
+			<button class="option">90</button>
+			<button class="option">37</button>
+		</div>
+	</div>
+</body>
+</html>

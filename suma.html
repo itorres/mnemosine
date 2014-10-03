@@ -1,0 +1,65 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Mnemosine</title>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<script src="bower_components/platform/platform.js"></script>
+
+  <style type="text/css">
+		#scenario {
+			width: 320px;
+			height: 320px;
+			margin: 0px auto;
+			border: 0px;
+		}
+		#content {
+			margin: 0px auto; width: 320px;
+			text-align: center;
+		}
+		#capture video, #capture img, #capture canvas {
+			width: 240px; height: 240px;
+		}
+		#capture img {
+			border-radius: 50%;
+		}
+
+	</style>
+	<script type="text/javascript">
+		var Game, Crafty, PS;
+		function pageLoaded() {
+			Game = document.getElementById('scenario').contentWindow.Game;
+			Crafty = document.getElementById('scenario').contentWindow.Crafty;
+			PS = document.getElementById('scenario').contentWindow.playersprite;
+
+		}
+	    window.addEventListener('load', pageLoaded);
+	    function changePlayer(sprite) {
+	    	Crafty.sprite(32, "../art/" + sprite + ".png", {
+			  PlayerSprite: [0,0]  
+			});
+
+	    	PS = sprite;
+			Game.giveUp();
+	    }
+		function newGame() {
+			// TODO: Should fire a "Game.giveUp"
+			// Game.world.state=0;
+			Game.giveUp();
+			//document.getElementById('scenario').contentWindow.Crafty.scene('Game');
+
+		}
+
+	</script>
+</head>
+<body>
+  <div id="content">
+	<iframe id="scenario" seamless="seamless" scrolling="no" src="totsuma"></iframe>  
+  	<button id="reinicio" onclick="newGame();">Nueva partida</button>	
+  	<button id="reinicio" onclick="changePlayer('chars2');">Jan</button>	
+  	<button id="reinicio" onclick="changePlayer('chars6');">Nil</button>	
+  	<button id="reinicio" onclick="changePlayer('chars1');">Pau</button>	
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,517 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Mnemosine</title>
+<!--
+	<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+-->
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<style type="text/css" shim-shadowdom>
+	@font-face {
+		font-family: 'Droid Sans Mono';
+		src: url("r/droid-sans-mono.ttf") format("truetype");
+		font-weight: normal;
+		font-style: normal;
+	}
+
+	* {
+		font-size: 18vmin;
+
+	}
+
+	#debug {
+		background: #ff6666;
+		bottom: -10vmin;
+		max-height: 10vmin;
+		font-size: 10pt;
+		text-align: left;
+	}
+	body {
+		font-family: 'Droid Sans Mono', monospace;
+		margin: 0;
+		padding: 0px;
+		text-align: center;
+		overflow: hidden;
+	}
+
+
+	h1 {
+		margin: 0px;
+		text-align: right;
+		font-size: 10vmin;
+		height: 12vmin;
+		line-height: 12vmin;
+		padding: 0 10px;
+	}
+	h1, .option, .profile  {
+		background-color: #4F7DC9;
+		color: #FFF;
+		box-shadow: .5vh 1vh 2vh rgba(50, 50, 50, 0.75), .5vh 1vh 2vh rgba(50, 50, 50, 0.75);
+		text-shadow: 1vh 1vh 2vh rgba(50, 50, 50, 0.75);
+	}
+	.content{
+		height: 60vh;
+
+		margin: 0 auto;
+		display: inline-block;
+	}
+
+	#profile {
+		display: inline-block;
+		z-index: 1;
+		display: none;
+	}
+
+	.option {
+		cursor: pointer;
+		display: block;
+		margin: .2em;
+		border-radius: 50%; text-align: center; padding: .2em .2em;
+		background: #4F7DC9;
+	}
+	button.profile {
+		position: absolute;
+		top: 5.5vmin; left: 2vmin;
+		width: 12vmin; height: 12vmin;
+		background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvVFIvMjAwMS9SRUMtU1ZHLTIwMDEwOTA0L0RURC9zdmcxMC5kdGQnPjxzdmcgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjQgMjQiIGlkPSJMYXllcl8xIiB2ZXJzaW9uPSIxLjAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGNpcmNsZSBjeD0iMTIiIGN5PSI4IiByPSI0Ii8+PHBhdGggZD0iTTEyLDE0Yy02LjEsMC04LDQtOCw0djJoMTZ2LTJDMjAsMTgsMTguMSwxNCwxMiwxNHoiLz48L3N2Zz4=') no-repeat 50% 50% gray;
+		border-radius: 50%;
+		background-size: 100%;
+
+
+	}
+	#ko {
+		position: absolute;
+		top: 60vh; left: 50vw;
+		width: 50vmin; height: 50vmin;
+		background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDMwMCAzMDAiIGhlaWdodD0iMzAwcHgiIGlkPSJMYXllcl8xIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMDAgMzAwIiB3aWR0aD0iMzAwcHgiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxnPjxwYXRoIGQ9Ik0xNTEuMzM4LDE0LjhjLTc0LjU1NywwLTEzNC45OTYsNjAuNDQtMTM0Ljk5NiwxMzUuMDAyYzAsNzQuNTU0LDYwLjQzOSwxMzQuOTk4LDEzNC45OTYsMTM0Ljk5OCAgIGM3NC41NTYsMCwxMzUuMDA0LTYwLjQ0MywxMzUuMDA0LTEzNC45OThDMjg2LjM0Miw3NS4yNDEsMjI1Ljg5NCwxNC44LDE1MS4zMzgsMTQuOHogTTE1MS4zMzgsMjY1LjcxNCAgIGMtNjQuMDEzLDAtMTE1LjkwOC01MS45MDEtMTE1LjkwOC0xMTUuOTEyYzAtNjQuMDE4LDUxLjg5NS0xMTUuOTExLDExNS45MDgtMTE1LjkxMWM2NC4wMTYsMCwxMTUuOTA5LDUxLjg5NCwxMTUuOTA5LDExNS45MTEgICBDMjY3LjI0NywyMTMuODEzLDIxNS4zNTQsMjY1LjcxNCwxNTEuMzM4LDI2NS43MTR6IiBmaWxsPSIjQkYzRDI3Ii8+PGNpcmNsZSBjeD0iMTUxLjM0MSIgY3k9IjE0OS44MDIiIGZpbGw9IiNCRjNEMjciIHI9IjEwNC40MjgiLz48cG9seWdvbiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjIxMy44NzgsMTgwLjYgMTgyLjEzMSwyMTIuMzQ0IDE1MS4zMzgsMTgxLjU0NyAxMjAuNTQxLDIxMi4zNDQgODguNzk5LDE4MC42IDExOS41ODYsMTQ5LjgwMiAgICA4OC43OTksMTE5LjAxMyAxMjAuNTQxLDg3LjI1NiAxNTEuMzM4LDExOC4wNTggMTgyLjEzMSw4Ny4yNTYgMjEzLjg3OCwxMTkuMDEzIDE4My4wNzcsMTQ5LjgwMiAgIi8+PC9nPjwvc3ZnPg==') no-repeat 50% 50%;
+		background-size: 100%;
+		opacity: 0;
+	}
+	#ok {
+		position: absolute;
+		top: 60vh; left: 50vw;
+		width: 50vmin; height: 50vmin;
+		background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDMwMCAzMDAiIGhlaWdodD0iMzAwcHgiIGlkPSJMYXllcl8xIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMDAgMzAwIiB3aWR0aD0iMzAwcHgiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxnPjxwYXRoIGQ9Ik0xNTAuNTIsMTQuNTI0Yy03NC43ODcsMC0xMzUuNDEsNjAuNjI3LTEzNS40MSwxMzUuNDE0YzAsNzQuNzc5LDYwLjYyMywxMzUuNDA2LDEzNS40MSwxMzUuNDA2ICAgYzc0Ljc4MiwwLDEzNS40MDktNjAuNjI3LDEzNS40MDktMTM1LjQwNkMyODUuOTI5LDc1LjE1MSwyMjUuMzAyLDE0LjUyNCwxNTAuNTIsMTQuNTI0eiBNMTUwLjUyLDI2Ni4xOTkgICBjLTY0LjIxMSwwLTExNi4yNjQtNTIuMDU5LTExNi4yNjQtMTE2LjI2MmMwLTY0LjIxMSw1Mi4wNTItMTE2LjI2MSwxMTYuMjY0LTExNi4yNjFjNjQuMjA3LDAsMTE2LjI2MSw1Mi4wNSwxMTYuMjYxLDExNi4yNjEgICBDMjY2Ljc4LDIxNC4xNDEsMjE0LjcyNywyNjYuMTk5LDE1MC41MiwyNjYuMTk5eiIgZmlsbD0iI0EzRDE3OSIvPjxwYXRoIGQ9Ik0yNTUuMjY0LDE0OS45MzRjMCw1Ny44NTItNDYuODk3LDEwNC43NDQtMTA0Ljc0NCwxMDQuNzQ0Yy01Ny44NTIsMC0xMDQuNzQ3LTQ2Ljg5My0xMDQuNzQ3LTEwNC43NDQgICBjMC01Ny44NTEsNDYuODk1LTEwNC43NDQsMTA0Ljc0Ny0xMDQuNzQ0QzIwOC4zNjYsNDUuMTg5LDI1NS4yNjQsOTIuMDgzLDI1NS4yNjQsMTQ5LjkzNHoiIGZpbGw9IiNBM0QxNzkiLz48cG9seWdvbiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjEzNy4yMDIsMjExLjQwMSA4MS45NzgsMTI1Ljk5NCA4MS45NzgsMTI0LjkyIDEzMy43MTgsMTQ4LjMgMjE5LjA1OSw4OC40NjYgICIvPjwvZz48L3N2Zz4=') no-repeat 50% 50%;
+		background-size: 100%;
+		opacity: 0;
+
+	}
+	#ok.show, #ko.show {
+		top: 35vh; left: 50%;
+		opacity: 1.0;
+	}
+	button {
+		border: none;
+		transition: all 150ms ease;
+	    /* non-accessible */
+	    outline: none;
+	}
+	button:active {
+		transform: translateY(.5vh);
+		box-shadow: .5vh 1vh 2vh rgba(50, 50, 50, 0.75);
+		animation: none;
+	}
+	#operation {
+		display: inline-block;
+	}
+	#operation > div {
+		text-align: right;
+	}
+	#operation > div.result > input {
+		text-align: right;
+		font-family: 'Droid Sans Mono', monospace;
+		border: none;
+		width: .7em;
+		border-top: black 2px solid;
+		background-color: WhiteSmoke;
+	}
+	.operand:nth-child(2)::before {
+		content: "+";
+	}
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+	</style>
+	<script type="text/javascript">
+	// Returns a random integer between min (included) and max (excluded)
+	// Using Math.round() will give you a non-uniform distribution!
+	function getRandomInt(min, max) {
+	  return Math.floor(Math.random() * (max - min)) + min;
+	}
+	function savetrail() {
+		var now = new Date();
+		var storekey = "games." + now.getUTCFullYear() + "" + (now.getUTCMonth() +1)
+		var storedgames = read(storekey);
+		if (storedgames === undefined) {
+			storedgames = {}
+		}
+		var gamekey = now.getTime();
+		storedgames[gamekey] = game;
+		write(storekey, storedgames);
+	}
+	function write(k, v) {
+		localStorage[k] = JSON.stringify(v);
+	}
+
+	function read(k) {
+		if (localStorage[k] === undefined) {
+			return undefined;
+		}
+		return JSON.parse(localStorage[k]);
+	}
+
+	function register(what) {
+		var key = "l" + getLevel();
+
+		if (Number(read(key)) === NaN) {
+			key = 1;
+		}
+		write(key,read(key) + what);
+	}
+
+	function setLevel (level) {
+		localStorage["level"] = level;
+	}
+
+	function getLevel () {
+		var level = Number(localStorage["level"]);
+		if (level != NaN) {
+			game.level = level;
+		} else {
+			localStorage["level"] = game.level;
+		}
+		return game.level;
+	}
+
+	function setup () {
+		game = {
+			'level': 1,
+			'operands': [],
+			'trail': [],
+			'strike': 0,
+		}
+
+		switch (getLevel()) {
+			case 4:
+				game.operands = [getRandomInt(30,99), getRandomInt(30,99)];
+				break;
+			case 2:
+				game.operands = [getRandomInt(1,50),  getRandomInt(1,50)];
+				break;
+			case 3:
+
+			case 1:
+			default:
+				game.operands = [getRandomInt(1,9),   getRandomInt(1,9)];
+		}
+		operands = game.operands;
+		real_result = operands.reduce(function(a,b) {return a+b});
+		opels = document.querySelectorAll(".operand");
+		for (var i = 0; i < opels.length; i++) {
+			opels[i].textContent = operands[i];
+		};
+		while (resultDiv.firstChild) {
+			resultDiv.removeChild(resultDiv.firstChild);
+		}
+		unfilled = String(real_result).length;
+		var tabindex = String(real_result).length;
+		for (var l = 0; l < String(real_result).length; l++) {
+			var rinput = document.createElement("input")
+			rinput.setAttribute("tabindex", tabindex);
+			rinput.setAttribute("type", "number");
+			tabindex--;
+			resultDiv.appendChild(rinput);
+		}
+		replaceElements();
+		playing = true;
+
+		//result.style.width = String(real_result).length + "em";
+
+	}
+
+	function pocket(wat) {
+		console.log(wat.propertyName, wat);
+		var element =  wat.target;
+
+		if (["ko", "ok"].indexOf(element.id) == -1) {
+			// Only listen to ko and ok button transitions.
+			return;
+		}
+		if (wat.propertyName == "opacity") {
+		/*
+			We get called for every property changed so we chose an animation that explicits a change.
+
+			We use opacity for diferent actions:
+				1) Fade the badge in (playing == false)
+					First time called. Fire fadeout (opacity = 0)
+					Change playing state (we want to play)
+				2) Move the operation out
+					Not binded to pocket
+				3) Pocket the badge (and continue playing)
+					When this transition ends we setup a new game
+		*/
+			if (playing) {
+				// save gametrail
+				savetrail();
+				setup(); // TODO: Use another function to explicit the flow
+			} else {
+				operationDiv.style.transition = "none";
+				operationDiv.style.left = (window.innerWidth + 100) + "px"
+				operationDiv.style.transition = "all 1s ease";
+
+				var ref = window.getComputedStyle(document.querySelector("button.profile"));
+				if (element.id == 'ok') {
+					element.style.left   = ref['left'];
+					element.style.top    = ref['top'];
+				} else {
+					element.style.left   = (-element.offsetWidth - 100) + 'px';
+				}
+				
+				element.style.width  = ref['width'];
+				element.style.height = ref['height'];
+				element.style.opacity = 0;
+				playing = true;
+			}
+		}
+	}
+
+	function replaceElements() {
+		vpcenter(operationDiv);
+		operationDiv.style.opacity = 1;
+		document.querySelector('#profile').style.display = 'none';
+		vpcenter(ok);
+		ok.style.width  = "50vmin";
+		ok.style.height =  "50vmin";
+		ok.style.left = (window.innerWidth + 100) + "px"
+		vpcenter(ko);
+		ko.style.width  = "50vmin";
+		ko.style.height =  "50vmin";
+		ko.style.left = (window.innerWidth + 100) + "px"
+
+		ok.style.transition  = "all 1s ease";
+		ko.style.transition  = "all 1s ease";
+		operationDiv.style.transition = "all 1s ease";
+		ok.addEventListener("transitionend", pocket, true);
+		ko.addEventListener("transitionend", pocket, true);
+	}
+	function readResult() {
+		var digits = resultDiv.children.length;
+		var lecture = "";
+		for (var i = 0; i < digits; i++) {
+			lecture += resultDiv.children[i].value;
+		}
+		return Number(lecture);
+	}
+	function check () {
+		function checkLength () {
+			return String(real_result).length === String(readResult()).length;
+		}
+		if (checkLength()) {
+			if (Number(real_result) === Number(readResult()) ) {
+				solve("ok");
+			} else {
+				strike();
+			}
+		}
+		return 
+	}
+	function strike() {
+		game.strike++;
+		console.log("game.strike");
+		if (game.strike == 3) {
+			solve("ko");
+		}
+	}
+	function solve (state) {
+		element = document.querySelector("button#" + state);
+		hideOperation();
+		vpcenter(element);
+		element.style.opacity = "1.0";
+		playing = false;
+		//element.classList.add("show");
+	}
+	function setMode (mode) {
+		document.title=mode;
+		document.querySelector("h1").textContent = mode;
+	}
+
+	var game;
+
+	var playing = false;
+
+	var resultDiv;
+	var real_result;
+	var operands;
+	var unfilled;	
+	var ok = document.querySelector("#ok"),
+		ko = document.querySelector("#ko"),
+		operationDiv = document.querySelector("#operation");
+
+    window.addEventListener('load', function() {
+		ok = document.querySelector("#ok"),
+			ko = document.querySelector("#ko"),
+			operationDiv = document.querySelector("#operation");
+
+   		resultDiv = document.getElementById('result');
+   		setMode("+");
+   		setup();
+
+   		resultDiv.addEventListener('input', function (e) {
+   			//console.log(e.target.);
+   			game.trail.push({
+   				"value": e.target.value,
+   				"position": e.target.getAttribute("tabindex")
+   			});
+   			check();
+   		});
+
+    });
+
+    function hideOperation () {
+    	var element = document.querySelector("#operation");
+		operationDiv.style.opacity = 0;
+    	element.style.left = -element.offsetWidth  + "px";
+    }
+
+    function vpcenter(vpc) {
+    	console.log("centering", vpc);
+    	console.log("window:", window.innerWidth, "x",window.innerHeight);
+    	console.log("element:", vpc.offsetWidth, "x",vpc.offsetHeight);
+    	console.log(window.innerHeight/2,vpc.offsetHeight/2);
+    	vpc.style.left = (window.innerWidth/2  - vpc.offsetWidth/2)  + "px";
+    	vpc.style.top  = (window.innerHeight/2 - vpc.offsetHeight/2) + "px";
+    	vpc.style.position = "absolute";
+    }
+
+    function replayAll() {
+		var digits = resultDiv.children.length;
+		var lecture = "";
+		for (var j = 0; j < digits; j++) {
+			resultDiv.children[i].value = "";
+		}
+
+    	for (var i = 0; i < game.trail.length; i++) {
+    		replay(i);
+    	}
+    }
+
+    function replay(m) {
+    	var position = game.trail[m].position;
+    	var value = game.trail[m].value;
+    	var input = document.querySelector('[tabindex="' + position + '"]');
+    	input.value = value;
+    	check();
+    }
+
+    function debug(wat) {
+    	document.getElementById('debug').textContent += new Date() + "> " + wat + "\n";
+    }
+
+	</script>
+</head>
+<body>
+	<div id="ok">&nbsp;</div>
+	<div id="ko">&nbsp;</div>
+	<button class="profile">&nbsp;</button><h1>Suma</h1>
+	<div id="operation">
+		<div class="operand">25</div>
+		<div class="operand">12</div>
+		<div id="result" class="result"> 
+		</div>
+	</div>
+	<div id="profile">
+		<div id="avatar">
+			<video autoplay></video>
+			<img src="">
+			<canvas></canvas>
+		</div>
+		<script type="text/javascript">
+
+		navigator.getUserMedia  = navigator.getUserMedia ||
+		                          navigator.webkitGetUserMedia ||
+		                          navigator.mozGetUserMedia ||
+		                          navigator.msGetUserMedia;
+
+			var video = document.querySelector('video');
+		  var canvas = document.querySelector('canvas');
+		  var ctx = canvas.getContext('2d');
+		  var img = document.querySelector('#avatar img');
+		  var localMediaStream = null;
+
+		  function snapshot() {
+		    if (localMediaStream) {
+		    	canvas.setAttribute("width", video.videoWidth);
+		    	canvas.setAttribute("height", video.videoHeight);
+
+		    	 ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+		    	// crop
+		    	var min = video.videoWidth < video.videoHeight ? video.videoWidth : video.videoHeight;
+		    	x = video.videoWidth  - min == 0 ? 0 : Math.floor((video.videoWidth - min) / 2);
+		    	y = video.videoHeight - min == 0 ? 0 : Math.floor((video.videoHeight - min) / 2);
+		    	console.log(x, y, min);
+		    	canvas.setAttribute("width",  min);
+		    	canvas.setAttribute("height", min);
+
+		        ctx.drawImage(video, x, y, min, min, 0, 0, min, min);
+
+		      // "image/webp" works in Chrome.
+		      // Other browsers will fall back to image/png.
+		      img.src = canvas.toDataURL('image/webp');
+		    }
+		  }
+		function pick() {
+			document.querySelector('button.profile').style.backgroundImage = "url(" + img.src + ")";
+		}
+		var videoloop;
+		
+		document.querySelector('button.profile').addEventListener('click', function() {
+			// Toggle profile
+			var el = document.querySelector('#profile')
+			if (el.style.display == 'none') {
+				videoloop  = window.setInterval(snapshot,250);
+				el.style.display = 'inline-block';
+				vpcenter(el);
+			} else {
+				if (videoloop !== undefined) {
+					window.clearInterval(videoloop);
+				}
+				el.style.display = 'none';
+			}
+		}, false);
+
+		img.addEventListener('click', pick, false);
+		if (navigator.getUserMedia) {
+			var vgaConstraints = {
+			  video: true
+			};
+		  navigator.getUserMedia(vgaConstraints, function(stream) {
+		  	
+		    video.src = window.URL.createObjectURL(stream);
+		    localMediaStream = stream;
+		  }, function(){console.log("Sin camara y a lo loco")});
+		} else {
+		  console.log("Sin camara y a lo MUY loco");
+		}
+		</script>
+		<style type="text/css">
+			#avatar video, #avatar canvas {
+				display: none;
+			}
+			#avatar img {
+				width: 240px; height: 240px;
+				border-radius: 50%;
+			}
+		</style>
+
+	</div>
+
+</body>
+</html>
