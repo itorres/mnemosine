@@ -48,7 +48,10 @@ function getLevel() {
   if (getWins() > 20) {
     return 2;
   }
-  return 1;
+  if (getWins() > 10) {
+    return 1;
+  }
+  return 0;
   level = Number(localStorage["level"]);
   if (level != NaN) {
     game.level = level;
@@ -73,7 +76,14 @@ function setOperation(operation) {
   opDiv.classList.add("digit");
   opDiv.textContent = operation;
 }
-
+function getUnits(index) {
+  var positions = ["units",
+    "tens",
+    "hundreds",
+    "thousands"
+  ];
+  return positions[index];
+}
 function showKeypad(index, target) {
   var positions = ["units",
     "tens",
@@ -86,10 +96,12 @@ function showKeypad(index, target) {
     digitsDiv.classList.remove(c);
   }
   digitsDiv.style.display = "initial";
-  digitsDiv.classList.add(positions[index]);
+  digitsDiv.classList.add(getUnits[index]);
   digitsDiv["xin-target"] = target;
   vpcenter(digitsDiv);
-digitsDiv.style.top = resultDiv.offsetTop + resultDiv.offsetHeight;
+//digitsDiv.style.top = (resultDiv.offsetTop + resultDiv.offsetHeight) * 1.;
+digitsDiv.style.top = '';
+digitsDiv.style.bottom = '.5em';
 }
 
 function newDigit(char, kind) {
@@ -116,11 +128,30 @@ function writeDiv(div, string, kind) {
 
 }
 function getOperands(low,high,carry) {
-  var o
+  /*
+  TODO: refactor to multiple operations
+    carry would become handicap
+  */
+  var o, o0l, o1l, s, carrying = false;
   if (typeof carry == "undefined") {
     carry = false;
   }
   o = [getRandomInt(low, high), getRandomInt(low, high)];
+  s = [String(o[0]),String(o[1])];
+  var shorter = s[0].length < s[1].length ? 0 : 1;
+  for (var i = 1;i<=s[shorter].length;i++) {
+    s0i = s[0].length -i;
+    s1i = s[1].length -i;
+    carrying = (Number(s[0][s0i]) + Number(s[1][s1i]))>9;
+    if (carrying) {
+      console.log("carry!",s, getUnits(i-1), Number(s[0][s0i]),Number(s[1][s1i]));
+      break;
+    }
+  }
+  console.log("Seguimos",o);
+  if (carry != carrying) {
+    return getOperands(low,high,carry);
+  }
   return o;
 }
 function setup() {
@@ -145,15 +176,17 @@ function setup() {
     */
     case 4: //
     case 3: // 2 digit operations and carry
-      game.operands = [getRandomInt(30, 99), getRandomInt(30, 99)];
+      game.operands = getOperands(30,99,true);
       break;
     case 2: // 2 digit operations
-      game.operands = [getRandomInt(1, 50), getRandomInt(1, 50)];
+      game.operands = getOperands(10,99,false);
       break;
-    case 1: // 1 digit and carry
+    case 1: // 2 digit
+      game.operands = getOperands(1,29,false);
+      break;
     case 0: // 1 digit operations
     default:
-      game.operands = [getRandomInt(1, 9), getRandomInt(1, 9)];
+      game.operands = getOperands(1,9,false);
   }
 
   operands = game.operands;
@@ -341,9 +374,15 @@ function readResult() {
 
 
 function strike() {
+  var strikes = document.querySelectorAll(".strike");
+  strikes[game.strike].style.display = "inline-block";
   game.strike++;
   console.log("game.strike", game.strike);
   if (game.strike == 3) {
+    for (var i=0;i<strikes.length;i++) {
+      strikes[i].style.display = "none";
+    }
+    document.querySelectorAll(".strike")
     solve("ko");
   }
 }
