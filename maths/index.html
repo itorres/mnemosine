@@ -17,8 +17,13 @@
   <div id="ok">&nbsp;</div>
   <div id="ko">&nbsp;</div>
   <button class="profile">&nbsp;</button>
-
   <h1>Suma</h1>
+  <div id="strikes">&nbsp;
+    <div class="strike">&nbsp;</div>
+    <div class="strike">&nbsp;</div>
+    <div class="strike">&nbsp;</div>
+  </div>
+
   <div id="operation">
     <div class="operand"></div>
     <div class="operand"></div>
@@ -80,6 +85,8 @@
 
       document.querySelector('button.profile').addEventListener('click', function() {
       	// Toggle profile
+
+        // TODO: Detect if we're in phonegap and use the native camera
         if (navigator.getUserMedia) {
           var vgaConstraints = {
             video: true
