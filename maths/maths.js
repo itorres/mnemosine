@@ -116,10 +116,12 @@ function writeDiv(div, string, kind) {
 
 }
 function getOperands(low,high,carry) {
+  var o
   if (typeof carry == "undefined") {
     carry = false;
   }
-  operands = [getRandomInt(low, high), getRandomInt(low, high)];
+  o = [getRandomInt(low, high), getRandomInt(low, high)];
+  return o;
 }
 function setup() {
   game = {
@@ -132,6 +134,15 @@ function setup() {
 
   var level = getLevel();
   switch (level) {
+    /*
+    Instead of a linear experience (I'm in level 3 so all my operations are 2 digit and carry)
+    every N operations could be of level 2 so the player can "refresh" with an easy one.
+
+    Also, instead of directly promoting to the next level (4) we could "throw" a challenge every
+    X operations. If three challenges are beaten we promote.
+
+    If we have already won 3 challenges we can make a strike of 3 challenges to win the next level.
+    */
     case 4: //
     case 3: // 2 digit operations and carry
       game.operands = [getRandomInt(30, 99), getRandomInt(30, 99)];
