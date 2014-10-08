@@ -1,0 +1,123 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Mnemosine</title>
+<!--
+	<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+-->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script type="text/javascript" src="../lib/libxin.js"></script>
+  <script type="text/javascript" src="maths.js"></script>
+  <link rel="stylesheet" href="maths.css" media="screen" title="no title" charset="utf-8">
+</head>
+
+<body>
+  <div id="ok">&nbsp;</div>
+  <div id="ko">&nbsp;</div>
+  <button class="profile">&nbsp;</button>
+
+  <h1>Suma</h1>
+  <div id="operation">
+    <div class="operand"></div>
+    <div class="operand"></div>
+    <div id="result" class="result">
+    </div>
+  </div>
+
+  <div id="profile">
+    <div id="avatar">
+      <video autoplay></video>
+      <img src="">
+      <canvas></canvas>
+    </div>
+    <script type="text/javascript">
+      navigator.getUserMedia = navigator.getUserMedia ||
+      	navigator.webkitGetUserMedia ||
+      	navigator.mozGetUserMedia ||
+      	navigator.msGetUserMedia;
+
+      var video = document.querySelector('video');
+      var canvas = document.querySelector('canvas');
+      var ctx = canvas.getContext('2d');
+      var img = document.querySelector('#avatar img');
+      var localMediaStream = null;
+
+      function snapshot() {
+      	if (navigator.getUserMedia) {
+      		var vgaConstraints = {
+      			video: true
+      		};
+      		navigator.getUserMedia(vgaConstraints, function(stream) {
+
+      			video.src = window.URL.createObjectURL(stream);
+      			localMediaStream = stream;
+      		}, function() {
+      			console.log("Sin camara y a lo loco")
+      		});
+      	} else {
+      		console.log("Sin camara y a lo MUY loco");
+      	}
+      	if (localMediaStream) {
+      		canvas.setAttribute("width", video.videoWidth);
+      		canvas.setAttribute("height", video.videoHeight);
+
+      		ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      		// crop
+      		var min = video.videoWidth < video.videoHeight ? video.videoWidth : video.videoHeight;
+      		x = video.videoWidth - min == 0 ? 0 : Math.floor((video.videoWidth - min) / 2);
+      		y = video.videoHeight - min == 0 ? 0 : Math.floor((video.videoHeight - min) / 2);
+      		console.log(x, y, min);
+      		canvas.setAttribute("width", min);
+      		canvas.setAttribute("height", min);
+
+      		ctx.drawImage(video, x, y, min, min, 0, 0, min, min);
+
+      		// "image/webp" works in Chrome.
+      		// Other browsers will fall back to image/png.
+      		img.src = canvas.toDataURL('image/webp');
+      	}
+      }
+
+      function pick() {
+      	document.querySelector('button.profile').style.backgroundImage = "url(" + img.src + ")";
+      }
+      img.addEventListener('click', pick, false);
+
+      var videoloop;
+
+      document.querySelector('button.profile').addEventListener('click', function() {
+      	// Toggle profile
+      	var el = document.querySelector('#profile')
+      	if (el.style.display == 'none') {
+      		videoloop = window.setInterval(snapshot, 250);
+      		el.style.display = 'inline-block';
+      		vpcenter(el);
+      	} else {
+      		if (videoloop !== undefined) {
+      			window.clearInterval(videoloop);
+      		}
+      		el.style.display = 'none';
+      	}
+      }, false);
+    </script>
+    <style type="text/css">
+      #avatar video,
+      #avatar canvas {
+        display: none;
+      }
+      #avatar img {
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+      }
+    </style>
+
+  </div>
+<div id="digits">
+
+</div>
+</body>
+
+</html>
